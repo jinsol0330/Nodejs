@@ -84,7 +84,7 @@ var app = http.createServer(function(request,response){
         var title = 'WEB - create';
         var list = templateList(filelist);
         var template = templateHTML(title, list, `
-          <form action = "http://localhost:3000/create_process" method="post">
+          <form action = "/create_process" method="post">
             <p><input type="text" name="title" placeholder="title"></p>
             <p><textarea name="description" placeholder="description"></textarea></p>
             <p><input type="submit"></p>
@@ -114,6 +114,29 @@ var app = http.createServer(function(request,response){
             response.end();
           })
         });
+    } else if(pathname === '/update') {
+        fs.readdir('./data', function(err, filelist) {
+        //파일리스트를 가져오는 코드
+        fs.readFile(`data/${queryData.id}`, 'utf8', function(err,description) {
+          var title = queryData.id;
+          var list = templateList(filelist);
+          var template =  templateHTML(title, list, 
+            `
+            <form action = "/update_process" method="post">
+            <input type="hidden" name="id" value="${title}">
+            <p><input type="text" name="title" placeholder="title" value="${title}"></p>
+            <p><textarea name="description" placeholder="description">${description}</textarea></p>
+            <p><input type="submit"></p>
+            </form>
+            `,
+            `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
+           );
+         response.writeHead(200);
+         response.end(template);
+         //response.end(fs.readFileSync(__dirname + _url));
+         //사용자가 접속한 url에 따라서 파일들을 읽어주는 코드
+       });
+     });
     } else {
         //루트상태가 아니라면 error화면 출력
         response.writeHead(404);
