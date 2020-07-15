@@ -4,7 +4,7 @@ var url = require('url');
 var qs = require('querystring');
 //url이라는 모듈을 사용할것이다 라는 것을 node.js에게 알림
 
-function templateHTML(title, list, body) {
+function templateHTML(title, list, body, control) {
   return `
         <!doctype html>
         <html>
@@ -15,7 +15,7 @@ function templateHTML(title, list, body) {
         <body>
           <h1><a href="/">WEB</a></h1>
           ${list}
-          <a href="/create">create</a>
+          ${control}
           ${body}
         </body>
         </html>
@@ -50,7 +50,10 @@ var app = http.createServer(function(request,response){
         var title = 'Welcome';
         var description = 'Hello, Node.js';
         var list = templateList(filelist);
-        var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
+        var template = templateHTML(title, list, 
+          `<h2>${title}</h2>${description}`,
+          `<a href="/create">create</a>`
+          );
         response.writeHead(200);
         response.end(template);
         //response.end(fs.readFileSync(__dirname + _url));
@@ -63,7 +66,10 @@ var app = http.createServer(function(request,response){
         fs.readFile(`data/${queryData.id}`, 'utf8', function(err,description) {
           var title = queryData.id;
           var list = templateList(filelist);
-          var template =  templateHTML(title, list, `<h2>${title}</h2>${description}`);
+          var template =  templateHTML(title, list, 
+            `<h2>${title}</h2>${description}`,
+            `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
+            );
           response.writeHead(200);
           response.end(template);
           //response.end(fs.readFileSync(__dirname + _url));
@@ -83,7 +89,7 @@ var app = http.createServer(function(request,response){
             <p><textarea name="description" placeholder="description"></textarea></p>
             <p><input type="submit"></p>
           </form>
-        `);
+        `, '');
         response.writeHead(200);
         response.end(template);
         //response.end(fs.readFileSync(__dirname + _url));
