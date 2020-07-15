@@ -5,6 +5,7 @@ var qs = require('querystring');
 //url이라는 모듈을 사용할것이다 라는 것을 node.js에게 알림
 
 var template = require('./lib/template.js');
+var path = require('path');
 
 var app = http.createServer(function (request, response) {
   var _url = request.url;
@@ -35,7 +36,8 @@ var app = http.createServer(function (request, response) {
     } else {  //id값이 있다면
       fs.readdir('./data', function (err, filelist) {
         //파일리스트를 가져오는 코드
-        fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
+        var filteredId = path.parse(queryData.id).base;
+        fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
           var title = queryData.id;
           var list = template.list(filelist);
           var html = template.HTML(title, list,
@@ -94,7 +96,8 @@ var app = http.createServer(function (request, response) {
   } else if (pathname === '/update') {
     fs.readdir('./data', function (err, filelist) {
       //파일리스트를 가져오는 코드
-      fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
+      var filteredId = path.parse(queryData.id).base;
+      fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
         var title = queryData.id;
         var list = template.list(filelist);
         var html = template.HTML(title, list,
@@ -144,7 +147,8 @@ var app = http.createServer(function (request, response) {
     request.on('end', function () {
       var post = qs.parse(body);
       var id = post.id;
-      fs.unlink(`data/${id}`, function (error) {
+      var filteredId = path.parse(id).base;
+      fs.unlink(`data/${filteredId}`, function (error) {
         response.writeHead(302, { Location: `/` });
         response.end();
       })
