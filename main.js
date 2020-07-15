@@ -137,6 +137,28 @@ var app = http.createServer(function(request,response){
          //사용자가 접속한 url에 따라서 파일들을 읽어주는 코드
        });
      });
+    } else if(pathname === '/update_process') {
+      var body = '';
+      request.on('data', function(data) {
+         body = body+data;
+      });
+      //서버쪽에서 데이터를 수신할때마다 콜백함수를 호출하기로 약속되어있음
+
+      request.on('end', function() {
+        var post = qs.parse(body);
+        var id = post.id;
+        var title = post.title;
+        var description = post.description;
+        fs.rename(`data/${id}`, `data/${title}`, function(error) {
+          fs.writeFile(`data/${title}`, description, 'utf8',
+        function(err) {
+          response.writeHead(302, {Location: `/?id=${title}`});
+          response.end();
+        })
+        })
+        
+      });
+
     } else {
         //루트상태가 아니라면 error화면 출력
         response.writeHead(404);
