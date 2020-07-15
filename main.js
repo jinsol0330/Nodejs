@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url'); 
+var qs = require('querystring');
 //url이라는 모듈을 사용할것이다 라는 것을 node.js에게 알림
 
 function templateHTML(title, list, body) {
@@ -77,7 +78,7 @@ var app = http.createServer(function(request,response){
         var title = 'WEB - create';
         var list = templateList(filelist);
         var template = templateHTML(title, list, `
-          <form action = "http://localhost:3000/process_create" method="post">
+          <form action = "http://localhost:3000/create_process" method="post">
             <p><input type="text" name="title" placeholder="title"></p>
             <p><textarea name="description" placeholder="description"></textarea></p>
             <p><input type="submit"></p>
@@ -89,10 +90,27 @@ var app = http.createServer(function(request,response){
         //사용자가 접속한 url에 따라서 파일들을 읽어주는 코드
         });
 
+    } else if(pathname === '/create_process') {
+        var body = '';
+        request.on('data', function(data) {
+           body = body+data;
+        });
+        //서버쪽에서 데이터를 수신할때마다 콜백함수를 호출하기로 약속되어있음
+
+        request.on('end', function() {
+          var post = qs.parse(body);
+          var title = post.title;
+          var description = post.description;
+        });
+        //더 이상 수신될 데이터가 없을 때 호출
+
+        response.writeHead(200);
+        response.end('success');
+
     } else {
-      //루트상태가 아니라면 error화면 출력
-      response.writeHead(404);
-      response.end('Not Found');
+        //루트상태가 아니라면 error화면 출력
+        response.writeHead(404);
+        response.end('Not Found');
     }
 });
 app.listen(3000);
