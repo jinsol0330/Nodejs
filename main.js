@@ -63,12 +63,17 @@ var app = http.createServer(function(request,response){
       } else {  //id값이 있다면
         fs.readdir('./data', function(err, filelist) {
           //파일리스트를 가져오는 코드
-        fs.readFile(`data/${queryData.id}`, 'utf8', function(err,description) {
+        fs.readFile (`data/${queryData.id}`, 'utf8', function(err,description) {
           var title = queryData.id;
           var list = templateList(filelist);
-          var template =  templateHTML(title, list, 
+          var template = templateHTML(title, list, 
             `<h2>${title}</h2>${description}`,
-            `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
+            `<a href="/create">create</a> 
+             <a href="/update?id=${title}">update</a>
+             <form action="delete_process" method="post">
+              <input type="hidden" name="id" value="${title}">
+              <input type="sumbit" value="delete">
+             </form>`
             );
           response.writeHead(200);
           response.end(template);
