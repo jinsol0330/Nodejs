@@ -101,12 +101,13 @@ var app = http.createServer(function(request,response){
           var post = qs.parse(body);
           var title = post.title;
           var description = post.description;
+          fs.writeFile(`data/${title}`, description, 'utf8',
+          function(err) {
+            response.writeHead(302, {Location: `/?id=${title}`});
+            //302는 페이지를 다른 곳으로 리다이렉션 시키라는 의미
+            response.end();
+          })
         });
-        //더 이상 수신될 데이터가 없을 때 호출
-
-        response.writeHead(200);
-        response.end('success');
-
     } else {
         //루트상태가 아니라면 error화면 출력
         response.writeHead(404);
